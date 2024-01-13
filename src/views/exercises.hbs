@@ -1,0 +1,36 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>MyWorkout | Exercises</title>
+    <script src='/programView/programs.js'></script>
+    <link rel='stylesheet' href='/programView/programs.css' />
+  </head>
+  <body>
+    {{#if hasExercises}}
+    <table>
+      <thead><tr><th>Name</th><th>Targeted Groupe</th><th>Action</th></tr></thead>
+      <tbody>{{#each exercises}}
+          <tr onclick="setName('{{this.name}}','{{this.id}}')"><td
+            >{{this.name}}</td><td>{{this.targetedGroupe}}</td>
+            <td>
+              <button onclick="deleteProgram(event,'{{id}}')">Delete</button>
+            </td>
+          </tr>
+        {{/each}}</tbody>
+    </table>
+    {{else}}
+    <h3>No Exercises available</h3>
+    {{/if}}
+    <form action='/exercises/view' method='post'>
+      <h3>Create a exercises</h3>
+      <input name='name' placeholder="Enter the exercise's name" />
+      <h3>Targeted groupe</h3>
+      <input name='targetedGroupe' placeholder="Enter the exercise's name" />
+      <button type='submit'>Add Exercise</button>
+    </form>
+
+  </body>
+
+</html>

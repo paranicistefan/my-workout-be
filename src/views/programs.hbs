@@ -1,0 +1,53 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>MyWorkout | Programs</title>
+    <script src='/programView/programs.js'></script>
+    <link rel='stylesheet' href='/programView/programs.css' />
+  </head>
+  <body>
+    {{#if hasPrograms}}
+    <table>
+      <thead><tr><th>Name</th><th>Exercises</th><th>Action</th></tr></thead>
+      <tbody>{{#each programs}}
+          <tr onclick="setName('{{this.name}}','{{this.id}}')"><td
+            >{{this.name}}</td><td>{{this.programExercises}}</td>
+            <td>
+              <button onclick="deleteProgram(event,'{{id}}')">Delete</button>
+            </td>
+          </tr>
+        {{/each}}</tbody>
+    </table>
+    <form onsubmit='updateProgram(event)'>
+      <h3>Edit a program</h3>
+      <div class='inputs-wrapper'>
+        <input
+          id='programNameInput'
+          name='name'
+          placeholder='Click on a program to edit'
+        />
+      </div>
+      <button type='submit' id='editButton' disabled='true'>Edit Program</button>
+    </form>
+    {{else}}
+    <h3>No Programs available</h3>
+    {{/if}}
+    {{#if hasExercises}}
+    <form action='/programs' method='post'>
+      <h3>Create a program</h3>
+      <input name='name' placeholder="Enter the program's name" />
+      <h3>Exercises</h3>
+      <select multiple="true" name='programExercises' id='programExercises'>
+        {{#each exercises}}
+          <option value={{this.id}}>{{this.name}}</option>
+        {{/each}}
+      </select>
+      <button type='submit'>Add Program</button>
+    </form>
+    {{/if}}
+
+  </body>
+
+</html>
