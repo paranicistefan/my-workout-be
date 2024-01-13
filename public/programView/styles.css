@@ -15,14 +15,14 @@ td {
   text-align: left;
 }
 th {
-  background-color: #4caf50;
+  background-color: #005148;
   color: white;
 }
 tr:nth-child(even) {
   background-color: #f2f2f2;
 }
 button {
-  background-color: #4caf50;
+  background-color: #005148;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -46,24 +46,40 @@ form {
   display: flex;
   gap: 1rem;
 }
-input,select {
+input,
+select {
   padding: 10px;
   margin: 10px 0;
   width: 100%;
 }
 
-
 select {
-  background-color: white;    
-  padding: 10px;              
-  font-size: 16px;            
-  color: #333;               
-  -webkit-appearance: none;   
-  -moz-appearance: none;      
-  appearance: none;                 
+  background-color: white;
+  padding: 10px;
+  font-size: 16px;
+  color: #333;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
 select {
   background-repeat: no-repeat;
   background-position: right 10px center;
+}
+
+.choices__button {
+  padding: 2px !important;
+  padding-left: 16px !important;
+}
+
+.choices__inner {
+  background: none;
+}
+.choices__input {
+  background: none;
+}
+
+.choices__list--multiple .choices__item {
+  background-color: #005148;
 }

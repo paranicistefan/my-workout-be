@@ -73,6 +73,7 @@ export class ExercisesController {
   }
 
   @Delete(':id')
+  @Public()
   remove(@Param('id') id: string) {
     try {
       return this.exercisesService.remove(id);

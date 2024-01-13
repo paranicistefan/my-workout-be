@@ -34,16 +34,20 @@ export class ProgramsService {
   async findAll() {
     const programs = await this.programsRepository.find();
     const parsedPrograms = programs.map((program) => {
-      const programExercisesString = program.programExercises
+      const programExercisesNames = program.programExercises
         .map((programExercise) => programExercise.name)
         .join(', ');
+      const programsExercisesIDs = program.programExercises.map(
+        (programExercise) => programExercise.id,
+      );
       return {
         id: program.id,
         name: program.name,
         programExercises:
-          programExercisesString === ''
+          programExercisesNames === ''
             ? 'No exercises available'
-            : programExercisesString,
+            : programExercisesNames,
+        programsExercisesIDs,
       };
     });
     return parsedPrograms;
