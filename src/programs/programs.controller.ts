@@ -14,6 +14,9 @@ import { ExercisesService } from 'src/exercises/exercises.service';
 import { Public } from 'src/users/jwt/auth.public';
 import { CreateProgramDto } from './dto/create-program.dto';
 import { ProgramsService } from './programs.service';
+import { JWTdata } from 'src/users/jwt/auth.decorator';
+import { ITokenPayoload } from 'src/users/interfaces/user.interfaces';
+import { UpdateProgramDto } from './dto/update-program.dto';
 
 @Controller('programs')
 @ApiBearerAuth()
@@ -26,56 +29,78 @@ export class ProgramsController {
   ) {}
 
   @Get()
-  findAll() {
-    return this.programsService.findAll();
+  findAll(@JWTdata() jwtData: ITokenPayoload) {
+    return this.programsService.findUserPrograms(jwtData.user);
   }
 
-  @Get('/view')
-  @Public()
-  @Render('programs')
-  async findAllView() {
-    const programs = await this.programsService.findAll();
-    const exercises = await this.exercisesService.findPublicExercises();
-    const hasPrograms = programs.length;
-    const hasExercises = exercises.length;
-    return { programs, exercises, hasPrograms, hasExercises };
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.programsService.findOne(id);
   }
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.programsService.findOne(id);
-  // }
 
   @Post()
-  @Public()
-  @Redirect('/programs/view')
-  create(@Body() createProgramDto: CreateProgramDto) {
-    return this.programsService.create(createProgramDto);
+  create(
+    @Body() createProgramDto: CreateProgramDto,
+    @JWTdata() jwtData: ITokenPayoload,
+  ) {
+    try {
+      return this.programsService.createUserProgram(
+        createProgramDto,
+        jwtData.user,
+      );
+    } catch (error) {
+      return error;
+    }
   }
 
   @Put(':id')
   @Public()
   async update(
     @Param('id') id: string,
-    @Body() updateProgramDto: CreateProgramDto,
+    @Body() updateProgramDto: UpdateProgramDto,
   ) {
-    console.log(JSON.stringify(updateProgramDto), 'controller');
-
-    return this.programsService.update(id, updateProgramDto);
+    try {
+      return this.programsService.update(id, updateProgramDto);
+    } catch (error) {
+      return error;
+    }
   }
 
-  //TODO: An enpoint that returns only the user specific programs, and one that only returns public programs
+  // @Delete(':programID/:exerciseId')
+  // async deleteExericseFromProgram(
+  //   @Param('programId') id: string,
+  //   @Param('exerciseId') exerciseId: string,
+  // ) {
+  //   console.log(id, exerciseId);
+  // }
 
-  //TODO: Implement the deletion of a exercise within a program
-  @Delete(':programID/:exerciseId')
-  async deleteExericseFromProgram(
-    @Param('programId') id: string,
-    @Param('exerciseId') exerciseId: string,
-  ) {
-    console.log(id, exerciseId);
-  }
   @Delete(':id')
   @Public()
   async remove(@Param('id') id: string) {
-    return this.programsService.remove(id);
+    try {
+      return this.programsService.remove(id);
+    } catch (error) {
+      return error;
+    }
+  }
+
+  //MVC
+
+  @Get('/view')
+  @Public()
+  @Render('programs')
+  async findAllView() {
+    const programs = await this.programsService.findPublicMVCPrograms();
+    const exercises = await this.exercisesService.findPublicExercises();
+    const hasPrograms = programs.length;
+    const hasExercises = exercises.length;
+    return { programs, exercises, hasPrograms, hasExercises };
+  }
+
+  @Post('/view')
+  @Public()
+  @Redirect('/programs/view')
+  createPublic(@Body() createProgramDto: CreateProgramDto) {
+    return this.programsService.createGlobalProgram(createProgramDto);
   }
 }

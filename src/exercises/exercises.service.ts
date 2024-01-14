@@ -25,6 +25,7 @@ export class ExercisesService {
     return this.exercisesRepository.save({ ...createExerciseDto, user });
   }
 
+  //Reads
   async findPublicExercises() {
     const exercises = await this.exercisesRepository.find({
       where: { user: null },
@@ -32,7 +33,6 @@ export class ExercisesService {
     return exercises;
   }
 
-  //Reads
   async findUserExercises(userId: string) {
     const user = await this.userService.findOne(userId);
     const userExercises = await this.exercisesRepository.find({

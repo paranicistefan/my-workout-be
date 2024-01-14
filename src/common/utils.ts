@@ -14,3 +14,5 @@ export const checkResourceExistance = async <T extends MyWorkoutBase>(
     );
   return selectedResource;
 };
+
+export const mapToIds = (ids: string[]) => ids.map((id) => ({ id }));

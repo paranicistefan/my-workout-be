@@ -83,6 +83,8 @@ export class ExercisesController {
   @Render('exercises')
   async findAllView() {
     const exercises = await this.exercisesService.findPublicExercises();
+    console.log(exercises);
+
     const hasExercises = exercises.length;
     return { exercises, hasExercises };
   }

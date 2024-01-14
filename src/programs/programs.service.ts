@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Program } from './entities/program.entity';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProgramDto } from './dto/create-program.dto';
-import { checkResourceExistance } from 'src/common/utils';
+import { checkResourceExistance, mapToIds } from 'src/common/utils';
 import { ExercisesService } from 'src/exercises/exercises.service';
+import { UsersService } from 'src/users/users.service';
+import { UpdateProgramDto } from './dto/update-program.dto';
 
 @Injectable()
 export class ProgramsService {
@@ -12,27 +14,49 @@ export class ProgramsService {
     @InjectRepository(Program)
     private readonly programsRepository: Repository<Program>,
     private readonly exerciseService: ExercisesService,
+    private readonly userService: UsersService,
   ) {}
 
-  //TODO : Add full CRUD functionality
-  async create(createProgramDto: CreateProgramDto) {
-    console.log(createProgramDto);
-    const exercisesToSave = await Promise.all(
-      createProgramDto.programExercises.map(async (exerciseId) => {
-        const exercise = await this.exerciseService.findOne(exerciseId);
-        return exercise;
-      }),
-    );
-
-    const programToSave = {
+  //Create
+  createGlobalProgram(createProgramDto: CreateProgramDto) {
+    const programExercises = mapToIds(createProgramDto.programExercises);
+    const program: DeepPartial<Program> = {
       ...createProgramDto,
-      programExercises: exercisesToSave,
+      programExercises,
     };
-    return this.programsRepository.save(programToSave);
+    return this.programsRepository.save(program);
   }
 
-  async findAll() {
-    const programs = await this.programsRepository.find();
+  createUserProgram(createProgramDto: CreateProgramDto, id: string) {
+    const user = { id };
+    const programExercises = mapToIds(createProgramDto.programExercises);
+    const program: DeepPartial<Program> = {
+      ...createProgramDto,
+      user,
+      programExercises,
+    };
+    return this.programsRepository.save(program);
+  }
+
+  //Reads
+  async findUserPrograms(userId: string) {
+    const user = await this.userService.findOne(userId);
+    const userExercises = await this.programsRepository.find({
+      where: { user },
+    });
+    return userExercises;
+  }
+
+  async findPublicPrograms() {
+    return await this.programsRepository.find({
+      where: { user: null },
+    });
+  }
+
+  async findPublicMVCPrograms() {
+    const programs = await this.programsRepository.find({
+      where: { user: null },
+    });
     const parsedPrograms = programs.map((program) => {
       const programExercisesNames = program.programExercises
         .map((programExercise) => programExercise.name)
@@ -61,7 +85,8 @@ export class ProgramsService {
     return selectedProgram;
   }
 
-  async update(id: string, updateProgramDto: CreateProgramDto) {
+  //Updates
+  async update(id: string, updateProgramDto: UpdateProgramDto) {
     const selectedProgram = await checkResourceExistance(
       this.programsRepository,
       id,
@@ -84,7 +109,7 @@ export class ProgramsService {
       id,
     });
   }
-
+  //deleted
   async remove(id: string) {
     const selectedProgram = await checkResourceExistance(
       this.programsRepository,
