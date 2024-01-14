@@ -21,11 +21,6 @@ export class Workout extends MyWorkoutBase {
     name: 'created_at',
   })
   createdAt: Date;
-  @Column({
-    type: 'varchar',
-    name: 'workout_name',
-  })
-  name: string;
 
   @ManyToOne(() => Program)
   program: Program;

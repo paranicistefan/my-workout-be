@@ -35,7 +35,7 @@ export class ProgramsController {
   @Render('programs')
   async findAllView() {
     const programs = await this.programsService.findAll();
-    const exercises = await this.exercisesService.findAll();
+    const exercises = await this.exercisesService.findPublicExercises();
     const hasPrograms = programs.length;
     const hasExercises = exercises.length;
     return { programs, exercises, hasPrograms, hasExercises };
@@ -63,6 +63,16 @@ export class ProgramsController {
     return this.programsService.update(id, updateProgramDto);
   }
 
+  //TODO: An enpoint that returns only the user specific programs, and one that only returns public programs
+
+  //TODO: Implement the deletion of a exercise within a program
+  @Delete(':programID/:exerciseId')
+  async deleteExericseFromProgram(
+    @Param('programId') id: string,
+    @Param('exerciseId') exerciseId: string,
+  ) {
+    console.log(id, exerciseId);
+  }
   @Delete(':id')
   @Public()
   async remove(@Param('id') id: string) {

@@ -11,6 +11,7 @@ import { LoginDto } from './dto/login.dto';
 import { compare, hash } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/sing-up.dto';
+import { ITokenPayoload } from './interfaces/user.interfaces';
 
 @Injectable()
 export class UsersService {
@@ -54,7 +55,7 @@ export class UsersService {
     if (!passMatches) {
       throw new ForbiddenException('Wrong email or password');
     }
-    const jwtPayload = {
+    const jwtPayload: ITokenPayoload = {
       email: currentUser.email,
       user: currentUser.id,
     };

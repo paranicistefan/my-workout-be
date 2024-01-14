@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from './dto/login.dto';
@@ -17,19 +17,19 @@ export class UsersController {
   //   return this.userService.create(createUserDto);
   // }
 
-  @Get()
-  findAll() {
-    return this.userService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.userService.findAll();
+  // }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    try {
-      return this.userService.findOne(id);
-    } catch (error) {
-      return error;
-    }
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   try {
+  //     return this.userService.findOne(id);
+  //   } catch (error) {
+  //     return error;
+  //   }
+  // }
 
   @Post('/login')
   @Public()

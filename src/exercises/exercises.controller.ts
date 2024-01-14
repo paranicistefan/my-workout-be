@@ -14,47 +14,34 @@ import { Public } from 'src/users/jwt/auth.public';
 import { CreateExerciseDto } from './dto/create-exercise.dto';
 import { UpdateExerciseDto } from './dto/update-exercise.dto';
 import { ExercisesService } from './exercises.service';
+import { JWTdata } from 'src/users/jwt/auth.decorator';
+import { ITokenPayoload } from 'src/users/interfaces/user.interfaces';
 
 @Controller('exercises')
-@ApiBearerAuth()
 @ApiTags('Exercises')
 export class ExercisesController {
   constructor(private readonly exercisesService: ExercisesService) {}
-
   @Post()
-  create(@Body() createExerciseDto: CreateExerciseDto) {
+  @ApiBearerAuth()
+  create(
+    @Body() createExerciseDto: CreateExerciseDto,
+    @JWTdata() tockenData: ITokenPayoload,
+  ) {
     try {
-      return this.exercisesService.create(createExerciseDto);
+      return this.exercisesService.createUserExercise(
+        createExerciseDto,
+        tockenData.user,
+      );
     } catch (error) {
       return error;
     }
   }
 
-  @Post('/view')
-  @Public()
-  @Redirect('/exercises/view')
-  createView(@Body() createExerciseDto: CreateExerciseDto) {
-    return this.exercisesService.create(createExerciseDto);
-  }
-
-  @Get('/view')
-  @Public()
-  @Render('exercises')
-  async findAllView() {
-    const exercises = await this.exercisesService.findAll();
-    const hasExercises = exercises.length;
-    return { exercises, hasExercises };
-  }
-
   @Get()
-  findAll() {
-    return this.exercisesService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @ApiBearerAuth()
+  findAll(@JWTdata() tockenData: ITokenPayoload) {
     try {
-      return this.exercisesService.findOne(id);
+      return this.exercisesService.findUserExercises(tockenData.user);
     } catch (error) {
       return error;
     }
@@ -80,5 +67,23 @@ export class ExercisesController {
     } catch (error) {
       return error;
     }
+  }
+
+  //MVC's
+
+  @Post('/view')
+  @Public()
+  @Redirect('/exercises/view')
+  createView(@Body() createExerciseDto: CreateExerciseDto) {
+    return this.exercisesService.createGlobalExercise(createExerciseDto);
+  }
+
+  @Get('/view')
+  @Public()
+  @Render('exercises')
+  async findAllView() {
+    const exercises = await this.exercisesService.findPublicExercises();
+    const hasExercises = exercises.length;
+    return { exercises, hasExercises };
   }
 }
