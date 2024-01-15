@@ -4,8 +4,8 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
+  Put,
   Redirect,
   Render,
 } from '@nestjs/common';
@@ -47,7 +47,7 @@ export class ExercisesController {
     }
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id') id: string,
     @Body() updateExerciseDto: UpdateExerciseDto,

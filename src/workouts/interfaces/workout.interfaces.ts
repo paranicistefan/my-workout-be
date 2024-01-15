@@ -2,12 +2,12 @@ import { ISetData } from 'src/sets/interfaces/sets.interfaces';
 
 export interface IWorkoutExercise {
   name: string;
-  sets: ISetData;
+  sets: ISetData[];
 }
 
 export interface IWorkoutScheleton {
   programName: string;
-  exercises: IWorkoutExercise;
+  exercises: IWorkoutExercise[];
 }
 
 export interface IWorkoutResponse {

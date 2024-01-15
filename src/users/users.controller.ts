@@ -6,7 +6,6 @@ import { SignUpDto } from './dto/sing-up.dto';
 import { Public } from './jwt/auth.public';
 
 @Controller('user')
-@ApiBearerAuth()
 @ApiTags('Users')
 export class UsersController {
   constructor(private readonly userService: UsersService) {}

@@ -1,40 +1,39 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSetDto } from './dto/create-set.dto';
-import { UpdateSetDto } from './dto/update-set.dto';
 import { Set } from './entities/set.entity';
 import { checkResourceExistance } from 'src/common/utils';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ISetData } from './interfaces/sets.interfaces';
 
 @Injectable()
 export class SetsService {
   constructor(
     @InjectRepository(Set)
-    private readonly exercisesRepository: Repository<Set>,
+    private readonly setsRepository: Repository<Set>,
   ) {}
 
-  create(createSetDto: CreateSetDto) {
-    return this.exercisesRepository.save(createSetDto);
+  async create(createSetDto: ISetData) {
+    return await this.setsRepository.save(createSetDto);
   }
 
   findAll() {
-    return this.exercisesRepository.find();
+    return this.setsRepository.find();
   }
 
   async findOne(id: string) {
     const selectedExercise = await checkResourceExistance(
-      this.exercisesRepository,
+      this.setsRepository,
       id,
     );
     return selectedExercise;
   }
-  async update(id: string, updateSetDto: UpdateSetDto) {
+  async update(id: string, updateSetDto: ISetData) {
     const selectedExercise = await checkResourceExistance(
-      this.exercisesRepository,
+      this.setsRepository,
       id,
     );
 
-    return this.exercisesRepository.save({
+    return this.setsRepository.save({
       ...selectedExercise,
       ...updateSetDto,
     });
@@ -42,9 +41,9 @@ export class SetsService {
 
   async remove(id: string) {
     const selectedExercise = await checkResourceExistance(
-      this.exercisesRepository,
+      this.setsRepository,
       id,
     );
-    return this.exercisesRepository.remove(selectedExercise);
+    return this.setsRepository.remove(selectedExercise);
   }
 }

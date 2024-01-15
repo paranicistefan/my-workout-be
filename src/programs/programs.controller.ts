@@ -19,9 +19,7 @@ import { ITokenPayoload } from 'src/users/interfaces/user.interfaces';
 import { UpdateProgramDto } from './dto/update-program.dto';
 
 @Controller('programs')
-@ApiBearerAuth()
 @ApiTags('Programs')
-@ApiBearerAuth()
 export class ProgramsController {
   constructor(
     private readonly programsService: ProgramsService,
@@ -29,16 +27,19 @@ export class ProgramsController {
   ) {}
 
   @Get()
+  @ApiBearerAuth()
   findAll(@JWTdata() jwtData: ITokenPayoload) {
     return this.programsService.findUserPrograms(jwtData.user);
   }
 
   @Get(':id')
+  @ApiBearerAuth()
   findOne(@Param('id') id: string) {
     return this.programsService.findOne(id);
   }
 
   @Post()
+  @ApiBearerAuth()
   create(
     @Body() createProgramDto: CreateProgramDto,
     @JWTdata() jwtData: ITokenPayoload,
