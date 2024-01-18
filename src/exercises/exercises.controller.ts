@@ -43,12 +43,14 @@ export class ExercisesController {
   async findAll() {
     try {
       const allExercises = await this.exercisesService.findAllExercises();
-      const mappedExercises: IExercisesRes[] = allExercises.map((exercise) => ({
-        id: exercise.id,
-        name: exercise.name,
-        targetedGroupe: exercise.targetedGroupe,
-        isUserExercise: !!exercise.user,
-      }));
+      const mappedExercises: IExercisesRes[] = allExercises.map(
+        ({ id, name, targetedGroupe, isUserExercise }) => ({
+          id,
+          name,
+          targetedGroupe,
+          isUserExercise,
+        }),
+      );
       return mappedExercises;
     } catch (error) {
       return error;
@@ -91,7 +93,6 @@ export class ExercisesController {
   @Render('exercises')
   async findAllView() {
     const exercises = await this.exercisesService.findPublicExercises();
-    console.log(exercises);
 
     const hasExercises = exercises.length;
     return { exercises, hasExercises };

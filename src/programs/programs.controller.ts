@@ -17,8 +17,9 @@ import { CreateProgramDto } from './dto/create-program.dto';
 import { ProgramsService } from './programs.service';
 import { JWTdata } from 'src/users/jwt/auth.decorator';
 import { ITokenPayoload } from 'src/users/interfaces/user.interfaces';
-import { UpdateProgramDto } from './dto/update-program.dto';
 import { CacheInterceptor } from '@nestjs/cache-manager';
+import { AddExerciseDto } from './dto/add-exercise.dto';
+import { EditExerciseDto } from './dto/edit-exercise.dto';
 
 @Controller('programs')
 @ApiTags('Programs')
@@ -31,8 +32,8 @@ export class ProgramsController {
 
   @Get()
   @ApiBearerAuth()
-  findAll(@JWTdata() jwtData: ITokenPayoload) {
-    return this.programsService.findUserPrograms(jwtData.user);
+  findAll() {
+    return this.programsService.findUserPrograms();
   }
 
   @Get(':id')
@@ -57,11 +58,53 @@ export class ProgramsController {
     }
   }
 
+  @Post('/programExercises/:programId')
+  @ApiBearerAuth()
+  async addExerisesToProgram(
+    @Param('programId') programId: string,
+    @Body() dto: AddExerciseDto,
+  ) {
+    try {
+      return this.programsService.addProgramExercise(
+        programId,
+        dto.selectedExercise,
+      );
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @Put('/programExercises/:programId')
+  @ApiBearerAuth()
+  async editExerisesToProgram(
+    @Param('programId') programId: string,
+    @Body() dto: EditExerciseDto,
+  ) {
+    try {
+      return this.programsService.updateProgramExercise(programId, dto);
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @Delete('/:programId/:exerciseId')
+  @ApiBearerAuth()
+  async removeExerciseProgram(
+    @Param('programId') programId: string,
+    @Param('exerciseId') exeriseId: string,
+  ) {
+    try {
+      return this.programsService.removeProgramExercise(programId, exeriseId);
+    } catch (error) {
+      return error;
+    }
+  }
+
   @Put(':id')
   @Public()
   async update(
     @Param('id') id: string,
-    @Body() updateProgramDto: UpdateProgramDto,
+    @Body() updateProgramDto: CreateProgramDto,
   ) {
     try {
       return this.programsService.update(id, updateProgramDto);
@@ -69,14 +112,6 @@ export class ProgramsController {
       return error;
     }
   }
-
-  // @Delete(':programID/:exerciseId')
-  // async deleteExericseFromProgram(
-  //   @Param('programId') id: string,
-  //   @Param('exerciseId') exerciseId: string,
-  // ) {
-  //   console.log(id, exerciseId);
-  // }
 
   @Delete(':id')
   @Public()

@@ -54,7 +54,9 @@ export class ExercisesService {
       'allExercises',
     )) as Exericse[];
     if (cachedExercises) return cachedExercises;
-    const userExercises = await this.exercisesRepository.find();
+    const userExercises = await this.exercisesRepository.find({
+      relations: ['user'],
+    });
     this.cacheManager.set('allExercises', userExercises);
     return userExercises;
   }

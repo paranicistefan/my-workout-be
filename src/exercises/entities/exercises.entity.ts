@@ -17,7 +17,10 @@ export class Exericse extends MyWorkoutBase {
 
   @ManyToOne(() => User, (user: User) => user.personalExercises, {
     nullable: true,
-    eager: true,
   })
   user: User;
+
+  get isUserExercise(): boolean {
+    return !!this.user;
+  }
 }

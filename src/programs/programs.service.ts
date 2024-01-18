@@ -6,7 +6,7 @@ import { CreateProgramDto } from './dto/create-program.dto';
 import { checkResourceExistance, mapToIds } from 'src/common/utils';
 import { ExercisesService } from 'src/exercises/exercises.service';
 import { UsersService } from 'src/users/users.service';
-import { UpdateProgramDto } from './dto/update-program.dto';
+import { EditExerciseDto } from './dto/edit-exercise.dto';
 
 @Injectable()
 export class ProgramsService {
@@ -38,12 +38,21 @@ export class ProgramsService {
     return this.programsRepository.save(program);
   }
 
-  //Reads
-  async findUserPrograms(userId: string) {
-    const user = await this.userService.findOne(userId);
-    const userExercises = await this.programsRepository.find({
-      where: { user },
+  async addProgramExercise(programId: string, exerciseId: string) {
+    const selectedProgram = await checkResourceExistance(
+      this.programsRepository,
+      programId,
+    );
+    const selectedExercise = await this.exerciseService.findOne(exerciseId);
+    return this.programsRepository.save({
+      ...selectedProgram,
+      programExercises: [...selectedProgram.programExercises, selectedExercise],
     });
+  }
+
+  //Reads
+  async findUserPrograms() {
+    const userExercises = await this.programsRepository.find();
     return userExercises;
   }
 
@@ -86,7 +95,27 @@ export class ProgramsService {
   }
 
   //Updates
-  async update(id: string, updateProgramDto: UpdateProgramDto) {
+  async updateProgramExercise(programId: string, exercises: EditExerciseDto) {
+    const selectedProgram = await checkResourceExistance(
+      this.programsRepository,
+      programId,
+    );
+    const selectedExercise = await this.exerciseService.findOne(
+      exercises.newExercise,
+    );
+    const newProgramExercises = selectedProgram.programExercises.map(
+      (exercise) => {
+        if (exercise.id !== exercises.oldExercise) return exercise;
+        return selectedExercise;
+      },
+    );
+    return this.programsRepository.save({
+      ...selectedProgram,
+      programExercises: newProgramExercises,
+    });
+  }
+
+  async update(id: string, updateProgramDto: CreateProgramDto) {
     const selectedProgram = await checkResourceExistance(
       this.programsRepository,
       id,
@@ -110,6 +139,22 @@ export class ProgramsService {
     });
   }
   //deleted
+
+  async removeProgramExercise(programId: string, exerciseId: string) {
+    const selectedProgram = await checkResourceExistance(
+      this.programsRepository,
+      programId,
+    );
+    await this.exerciseService.findOne(exerciseId);
+
+    return this.programsRepository.save({
+      ...selectedProgram,
+      programExercises: selectedProgram.programExercises.filter(
+        (p) => p.id === exerciseId,
+      ),
+    });
+  }
+
   async remove(id: string) {
     const selectedProgram = await checkResourceExistance(
       this.programsRepository,
