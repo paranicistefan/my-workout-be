@@ -150,7 +150,7 @@ export class ProgramsService {
     return this.programsRepository.save({
       ...selectedProgram,
       programExercises: selectedProgram.programExercises.filter(
-        (p) => p.id === exerciseId,
+        (p) => p.id !== exerciseId,
       ),
     });
   }
