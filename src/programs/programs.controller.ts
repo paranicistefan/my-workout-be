@@ -8,6 +8,7 @@ import {
   Put,
   Redirect,
   Render,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ExercisesService } from 'src/exercises/exercises.service';
@@ -17,9 +18,11 @@ import { ProgramsService } from './programs.service';
 import { JWTdata } from 'src/users/jwt/auth.decorator';
 import { ITokenPayoload } from 'src/users/interfaces/user.interfaces';
 import { UpdateProgramDto } from './dto/update-program.dto';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('programs')
 @ApiTags('Programs')
+@UseInterceptors(CacheInterceptor)
 export class ProgramsController {
   constructor(
     private readonly programsService: ProgramsService,

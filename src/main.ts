@@ -22,7 +22,7 @@ async function bootstrap() {
   app.setBaseViewsDir(join(__dirname, '..', 'src/views'));
   app.setViewEngine('hbs');
   app.enableCors({
-    origin: 'https://localhost:5173',
+    origin: 'http://localhost:4000',
   });
 
   await app.listen(3000);

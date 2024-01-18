@@ -16,6 +16,7 @@ import { UpdateExerciseDto } from './dto/update-exercise.dto';
 import { ExercisesService } from './exercises.service';
 import { JWTdata } from 'src/users/jwt/auth.decorator';
 import { ITokenPayoload } from 'src/users/interfaces/user.interfaces';
+import { IExercisesRes } from './interfaces/exercises.interfaces';
 
 @Controller('exercises')
 @ApiTags('Exercises')
@@ -39,9 +40,16 @@ export class ExercisesController {
 
   @Get()
   @ApiBearerAuth()
-  findAll(@JWTdata() tockenData: ITokenPayoload) {
+  async findAll() {
     try {
-      return this.exercisesService.findUserExercises(tockenData.user);
+      const allExercises = await this.exercisesService.findAllExercises();
+      const mappedExercises: IExercisesRes[] = allExercises.map((exercise) => ({
+        id: exercise.id,
+        name: exercise.name,
+        targetedGroupe: exercise.targetedGroupe,
+        isUserExercise: !!exercise.user,
+      }));
+      return mappedExercises;
     } catch (error) {
       return error;
     }

@@ -6,16 +6,19 @@ import {
   Param,
   Delete,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { WorkoutsService } from './workouts.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { IWorkoutScheleton } from './interfaces/workout.interfaces';
 import { JWTdata } from 'src/users/jwt/auth.decorator';
 import { ITokenPayoload } from 'src/users/interfaces/user.interfaces';
+import { CreateWorkoutDTO } from './dto/create.workout.dto';
+import { CacheInterceptor } from '@nestjs/cache-manager';
 
 @Controller('workouts')
 @ApiBearerAuth()
 @ApiTags('Workouts')
+@UseInterceptors(CacheInterceptor)
 export class WorkoutsController {
   constructor(private readonly workoutsService: WorkoutsService) {}
   //TODO: Do an endpoint that the last workout with the given program and create a workout scheleton
@@ -31,7 +34,7 @@ export class WorkoutsController {
   @Post(':programId')
   async finishWorkout(
     @Param('programId') programId: string,
-    @Body() workoutScheleton: IWorkoutScheleton,
+    @Body() workoutScheleton: CreateWorkoutDTO,
     @JWTdata() tokenData: ITokenPayoload,
   ) {
     try {

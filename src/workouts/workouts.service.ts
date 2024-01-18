@@ -10,6 +10,7 @@ import {
 } from './interfaces/workout.interfaces';
 import { intialSetState } from 'src/sets/interfaces/sets.interfaces';
 import { SetsService } from 'src/sets/sets.service';
+import { CreateWorkoutDTO } from './dto/create.workout.dto';
 
 @Injectable()
 export class WorkoutsService {
@@ -46,7 +47,6 @@ export class WorkoutsService {
         programName: selectedProgram.name,
         exercises: resExercises,
       };
-
       return workoutScheleton;
     }
 
@@ -63,7 +63,7 @@ export class WorkoutsService {
 
   async createWorkout(
     programId: string,
-    workoutScheleton: IWorkoutScheleton,
+    workoutScheleton: CreateWorkoutDTO,
     userId: string,
   ) {
     const program = await this.programsService.findOne(programId);
