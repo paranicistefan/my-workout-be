@@ -51,9 +51,12 @@ export class ProgramsService {
   }
 
   //Reads
-  async findUserPrograms() {
-    const userExercises = await this.programsRepository.find();
-    return userExercises;
+  async findAllUserPrograms(userId: string) {
+    const user = await this.userService.findOne(userId);
+    const userPrograms = await this.programsRepository.find({
+      where: { user: user || null },
+    });
+    return userPrograms;
   }
 
   async findPublicPrograms() {

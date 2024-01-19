@@ -40,9 +40,11 @@ export class ExercisesController {
 
   @Get()
   @ApiBearerAuth()
-  async findAll() {
+  async findAll(@JWTdata() tokenData: ITokenPayoload) {
     try {
-      const allExercises = await this.exercisesService.findAllExercises();
+      const allExercises = await this.exercisesService.findAllUserExercises(
+        tokenData.user,
+      );
       const mappedExercises: IExercisesRes[] = allExercises.map(
         ({ id, name, targetedGroupe, isUserExercise }) => ({
           id,

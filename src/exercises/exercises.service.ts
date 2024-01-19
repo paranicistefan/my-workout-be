@@ -49,13 +49,15 @@ export class ExercisesService {
     return userExercises;
   }
 
-  async findAllExercises() {
+  async findAllUserExercises(userId: string) {
+    const user = await this.userService.findOne(userId);
     const cachedExercises = (await this.cacheManager.get(
       'allExercises',
     )) as Exericse[];
     if (cachedExercises) return cachedExercises;
     const userExercises = await this.exercisesRepository.find({
       relations: ['user'],
+      where: { user: user || null },
     });
     this.cacheManager.set('allExercises', userExercises);
     return userExercises;

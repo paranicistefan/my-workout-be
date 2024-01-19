@@ -32,8 +32,8 @@ export class ProgramsController {
 
   @Get()
   @ApiBearerAuth()
-  findAll() {
-    return this.programsService.findUserPrograms();
+  findAll(@JWTdata() tokenData: ITokenPayoload) {
+    return this.programsService.findAllUserPrograms(tokenData.user);
   }
 
   @Get(':id')
