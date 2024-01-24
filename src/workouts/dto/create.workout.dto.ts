@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsUUID } from 'class-validator';
 
 export class CreateWorkoutDTO {
   @ApiProperty()
@@ -6,6 +7,9 @@ export class CreateWorkoutDTO {
 }
 
 export class ExercisesDTO {
+  @ApiProperty()
+  @IsUUID()
+  id: string;
   @ApiProperty()
   name: string;
   @ApiProperty()

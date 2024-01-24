@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Redirect,
   Render,
   UseInterceptors,
@@ -23,7 +24,6 @@ import { EditExerciseDto } from './dto/edit-exercise.dto';
 
 @Controller('programs')
 @ApiTags('Programs')
-@UseInterceptors(CacheInterceptor)
 export class ProgramsController {
   constructor(
     private readonly programsService: ProgramsService,
@@ -32,10 +32,22 @@ export class ProgramsController {
 
   @Get()
   @ApiBearerAuth()
-  findAll(@JWTdata() tokenData: ITokenPayoload) {
-    return this.programsService.findAllUserPrograms(tokenData.user);
+  findAll(
+    @Query('getAll') getAll: boolean,
+    @JWTdata() tokenData: ITokenPayoload,
+  ) {
+    return this.programsService.findAllUserPrograms(tokenData.user, getAll);
   }
-
+  @Get('/view')
+  @Public()
+  @Render('programs')
+  async findAllView() {
+    const programs = await this.programsService.findPublicMVCPrograms();
+    const exercises = await this.exercisesService.findPublicExercises();
+    const hasPrograms = programs.length;
+    const hasExercises = exercises.length;
+    return { programs, exercises, hasPrograms, hasExercises };
+  }
   @Get(':id')
   @ApiBearerAuth()
   findOne(@Param('id') id: string) {
@@ -124,17 +136,6 @@ export class ProgramsController {
   }
 
   //MVC
-
-  @Get('/view')
-  @Public()
-  @Render('programs')
-  async findAllView() {
-    const programs = await this.programsService.findPublicMVCPrograms();
-    const exercises = await this.exercisesService.findPublicExercises();
-    const hasPrograms = programs.length;
-    const hasExercises = exercises.length;
-    return { programs, exercises, hasPrograms, hasExercises };
-  }
 
   @Post('/view')
   @Public()

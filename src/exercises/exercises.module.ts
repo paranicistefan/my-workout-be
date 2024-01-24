@@ -7,11 +7,7 @@ import { UsersModule } from 'src/users/users.module';
 import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Exericse]),
-    UsersModule,
-    CacheModule.register(),
-  ],
+  imports: [TypeOrmModule.forFeature([Exericse]), CacheModule.register()],
   controllers: [ExercisesController],
   providers: [ExercisesService],
   exports: [ExercisesService],

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { checkResourceExistance } from 'src/common/utils';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { CreateExerciseDto } from './dto/create-exercise.dto';
 import { UpdateExerciseDto } from './dto/update-exercise.dto';
 import { Exericse } from './entities/exercises.entity';
@@ -14,7 +14,6 @@ export class ExercisesService {
   constructor(
     @InjectRepository(Exericse)
     private readonly exercisesRepository: Repository<Exericse>,
-    private readonly userService: UsersService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -35,30 +34,32 @@ export class ExercisesService {
     )) as Exericse[];
     if (cachedPublicExercises) return cachedPublicExercises;
     const exercises = await this.exercisesRepository.find({
-      where: { user: null },
+      relations: ['user'],
+      where: { user: { id: IsNull() } },
     });
+
     this.cacheManager.set('publicExercises', exercises);
     return exercises;
   }
 
   async findUserExercises(userId: string) {
-    const user = await this.userService.findOne(userId);
     const userExercises = await this.exercisesRepository.find({
-      where: { user },
+      where: { user: { id: userId } },
     });
     return userExercises;
   }
 
   async findAllUserExercises(userId: string) {
-    const user = await this.userService.findOne(userId);
     const cachedExercises = (await this.cacheManager.get(
       'allExercises',
     )) as Exericse[];
     if (cachedExercises) return cachedExercises;
     const userExercises = await this.exercisesRepository.find({
       relations: ['user'],
-      where: { user: user || null },
+      where: [{ user: { id: IsNull() } }, { user: { id: userId } }],
+      order: { user: { id: 'ASC' } },
     });
+
     this.cacheManager.set('allExercises', userExercises);
     return userExercises;
   }

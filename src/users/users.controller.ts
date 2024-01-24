@@ -40,7 +40,7 @@ export class UsersController {
     }
   }
 
-  @Post('/singup')
+  @Post('/signup')
   @Public()
   singUp(@Body() signUp: SignUpDto) {
     try {

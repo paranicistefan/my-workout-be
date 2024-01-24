@@ -11,7 +11,6 @@ import { CacheModule } from '@nestjs/cache-manager';
   imports: [
     TypeOrmModule.forFeature([Program]),
     ExercisesModule,
-    UsersModule,
     CacheModule.register(),
   ],
   controllers: [ProgramsController],

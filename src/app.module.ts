@@ -19,8 +19,9 @@ import { JwtAuthGuard } from './users/jwt/auth.guard';
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) =>
-        configService.get('database'),
+      useFactory: async (configService: ConfigService) => ({
+        ...configService.get('database'),
+      }),
       inject: [ConfigService],
     }),
     ExercisesModule,

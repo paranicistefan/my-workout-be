@@ -18,7 +18,6 @@ import { CacheInterceptor } from '@nestjs/cache-manager';
 @Controller('workouts')
 @ApiBearerAuth()
 @ApiTags('Workouts')
-@UseInterceptors(CacheInterceptor)
 export class WorkoutsController {
   constructor(private readonly workoutsService: WorkoutsService) {}
   //TODO: Do an endpoint that the last workout with the given program and create a workout scheleton

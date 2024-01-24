@@ -1,6 +1,7 @@
 export interface ISetData {
   repetitions: number;
   weight: number;
+  exercise?: { id: string };
 }
 
 export const intialSetState: ISetData = {

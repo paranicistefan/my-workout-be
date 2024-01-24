@@ -1,6 +1,7 @@
 import { ISetData } from 'src/sets/interfaces/sets.interfaces';
 
 export interface IWorkoutExercise {
+  id: string;
   name: string;
   sets: ISetData[];
 }

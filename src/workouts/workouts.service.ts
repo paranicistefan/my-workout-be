@@ -11,6 +11,7 @@ import {
 import { intialSetState } from 'src/sets/interfaces/sets.interfaces';
 import { SetsService } from 'src/sets/sets.service';
 import { CreateWorkoutDTO } from './dto/create.workout.dto';
+import { ExercisesService } from 'src/exercises/exercises.service';
 
 @Injectable()
 export class WorkoutsService {
@@ -24,15 +25,15 @@ export class WorkoutsService {
   async getProgramWorkout(programId: string) {
     const selectedProgram = await this.programsService.findOne(programId);
     const latestWorkout = await this.workoutsRepository.findOne({
-      where: { program: selectedProgram },
+      where: { program: { id: programId } },
       order: { createdAt: 'DESC' },
     });
+
     if (latestWorkout) {
-      const exercises = Array.from(
-        new Set(latestWorkout.sets.map((set) => set.exercise)),
-      );
+      const exercises = latestWorkout.program.programExercises;
       const resExercises: IWorkoutExercise[] = exercises.map(
         ({ name, id }) => ({
+          id,
           name,
           sets: latestWorkout.sets
             .filter((set) => set.exercise.id === id)
@@ -52,7 +53,8 @@ export class WorkoutsService {
 
     const initialProgramWorkout: IWorkoutScheleton = {
       programName: selectedProgram.name,
-      exercises: selectedProgram.programExercises.map(({ name }) => ({
+      exercises: selectedProgram.programExercises.map(({ name, id }) => ({
+        id,
         name,
         sets: [intialSetState],
       })),
@@ -69,7 +71,13 @@ export class WorkoutsService {
     const program = await this.programsService.findOne(programId);
     const user = { id: userId };
     const setsPromise = workoutScheleton.exercises.map((exercise) =>
-      exercise.sets.map(async (set) => await this.setsService.create(set)),
+      exercise.sets.map(
+        async (set) =>
+          await this.setsService.create({
+            ...set,
+            exercise: { id: exercise.id },
+          }),
+      ),
     );
     const sets = await Promise.all(setsPromise.flat());
     return this.workoutsRepository.save({ program, user, sets });
@@ -78,7 +86,7 @@ export class WorkoutsService {
   findAll(id: string, isArchived?: boolean) {
     const user = { id };
     return this.workoutsRepository.find({
-      where: { isArchived, user },
+      where: { isArchived: !!isArchived, user },
       order: { createdAt: 'DESC' },
     });
   }
@@ -89,10 +97,12 @@ export class WorkoutsService {
       id,
     );
 
-    const exercises = Array.from(
-      new Set(selectedWorkout.sets.map((set) => set.exercise)),
-    );
+    const exercises = selectedWorkout.program.programExercises;
+
+    console.log(exercises);
+
     const resExercises: IWorkoutExercise[] = exercises.map(({ name, id }) => ({
+      id,
       name,
       sets: selectedWorkout.sets
         .filter((set) => set.exercise.id === id)

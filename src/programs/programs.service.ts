@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Program } from './entities/program.entity';
-import { DeepPartial, Repository } from 'typeorm';
+import { DeepPartial, IsNull, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProgramDto } from './dto/create-program.dto';
 import { checkResourceExistance, mapToIds } from 'src/common/utils';
@@ -14,7 +14,6 @@ export class ProgramsService {
     @InjectRepository(Program)
     private readonly programsRepository: Repository<Program>,
     private readonly exerciseService: ExercisesService,
-    private readonly userService: UsersService,
   ) {}
 
   //Create
@@ -51,10 +50,11 @@ export class ProgramsService {
   }
 
   //Reads
-  async findAllUserPrograms(userId: string) {
-    const user = await this.userService.findOne(userId);
+  async findAllUserPrograms(userId: string, getAll: boolean) {
+    const allCondition = [{ user: { id: userId } }, { user: { id: IsNull() } }];
+    const onlyUser = { user: { id: userId } };
     const userPrograms = await this.programsRepository.find({
-      where: { user: user || null },
+      where: getAll ? allCondition : onlyUser,
     });
     return userPrograms;
   }
@@ -67,7 +67,7 @@ export class ProgramsService {
 
   async findPublicMVCPrograms() {
     const programs = await this.programsRepository.find({
-      where: { user: null },
+      where: { user: { id: IsNull() } },
     });
     const parsedPrograms = programs.map((program) => {
       const programExercisesNames = program.programExercises
