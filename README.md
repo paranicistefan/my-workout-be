@@ -32,30 +32,60 @@
 $ npm install
 ```
 
+## Add an env file, with the following data: 
+
+```bash
+
+PORT=''
+DB_HOST = ''
+DB_PORT = ''
+DB_NAME = ''
+DB_USER = ''
+DB_PASSWORD = ''
+
+
+JWT_SECRET = ''
+JWT_EXPIRES = ''
+
+```
+
+## Setup the database 
+
+```bash
+
+# Generate a migration
+yarn migration:generate
+
+# Run the migration
+yarn migration:run
+
+```
+
+
 ## Running the app
 
 ```bash
 # development
-$ npm run start
+$ yarn start
 
 # watch mode
-$ npm run start:dev
+$ yarn start:dev
 
 # production mode
-$ npm run start:prod
+$ yarn start:prod
 ```
 
 ## Test
 
 ```bash
 # unit tests
-$ npm run test
+$ yarn test
 
 # e2e tests
-$ npm run test:e2e
+$ yarn test:e2e
 
 # test coverage
-$ npm run test:cov
+$ yarn test:cov
 ```
 
 ## Support
